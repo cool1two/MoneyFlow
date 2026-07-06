@@ -1,0 +1,180 @@
+:root {
+  color: #1f2937;
+  background: #f5f7f8;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.canvas-shell {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 100vh;
+  background: #eef2f3;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #d7dee2;
+  background: #fbfcfc;
+}
+
+.eyebrow {
+  margin: 0 0 3px;
+  color: #0f766e;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.35rem;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid #b7d5ce;
+  border-radius: 999px;
+  color: #115e59;
+  background: #ecfdf5;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.canvas-stage {
+  min-height: 0;
+}
+
+.react-flow__node-moneyNode {
+  width: 210px;
+  border: 0;
+  background: transparent;
+}
+
+.money-node-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #9fb6ad;
+  border-radius: 8px;
+  color: #172026;
+  background: #fffdf7;
+  box-shadow: 0 10px 28px rgb(15 23 42 / 12%);
+}
+
+.money-node-handle {
+  width: 8px;
+  height: 8px;
+  border: 2px solid #0f766e;
+  background: #ecfdf5;
+}
+
+.money-node-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 12px 10px;
+  border-bottom: 1px solid #e4e0d5;
+}
+
+.money-node-card header span {
+  font-weight: 800;
+}
+
+.money-node-card header strong {
+  color: #0f766e;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.money-node-card dl {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 11px 12px 12px;
+}
+
+.money-node-card dl div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.money-node-card dt {
+  color: #5b6670;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.money-node-card dd {
+  margin: 0;
+  color: #172026;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.money-node-card .positive {
+  color: #0f766e;
+}
+
+.money-node-card .negative {
+  color: #b91c1c;
+}
+
+.react-flow__edge-path {
+  stroke: #0f766e;
+}
+
+.react-flow__edge-textbg {
+  fill: #fbfcfc;
+}
+
+.react-flow__edge-text {
+  fill: #172026;
+  font-weight: 700;
+}
+
+.react-flow__controls-button,
+.react-flow__minimap {
+  border-color: #d7dee2;
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
