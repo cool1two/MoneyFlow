@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moneyflow Project</title>
+</head>
+<body>
+
+<pre>
+# Project Handoff Brief
+## Project Name (Working Title)
+
+Working Title: FlowBudget
+
+Alternative Names:
+- CashCanvas
+- MoneyFlow
+- FlowLedger
+
+Status:
+Early Proof of Concept (POC)
+
+---
+
+# DO NOT LOSE THIS CONTEXT
+
+This is NOT another budgeting application.
+
+The product is a VISUAL FINANCIAL MODELER.
+
+Think:
+
+Excalidraw
++
+React Flow
++
+Sankey-style money flow visualization
+
+NOT
+
+Mint
+YNAB
+Monarch
+Quicken
+
+The user is NOT trying to track historical transactions.
+
+The user is trying to answer questions like:
+
+"If I increase this transfer by $200/month, what happens?"
+
+"If my income changes, which downstream accounts are affected?"
+
+"If this expense becomes weekly instead of monthly, where do I go negative?"
+
+The whiteboard IS the model.
+
+Everything exists to support visual financial modeling.
+
+The graph is the product.
+
+-----------------------------------------
+
+Confirmed decisions that should NOT be changed:
+
+• No user accounts
+• No authentication
+• No backend
+• No cloud database
+• Offline-first
+• Browser local storage
+• Import/Export JSON similar to Excalidraw
+• Manual whiteboard layout (NOT automatic Sankey layout)
+• Sankey-inspired proportional ribbons ONLY for rendering
+• GitHub Pages deployment target
+• React + TypeScript + Vite
+
+-----------------------------------------
+
+# 1. Project Vision
+
+Confirmed Decision
+
+Build an Excalidraw-like infinite whiteboard specifically for modeling money flow.
+
+Users create visual "money boxes" connected by animated proportional ribbons representing cash movement.
+
+Each node represents an account, category, income source, savings goal, investment, debt payment, transfer, expense, or any other financial entity.
+
+Connections represent money flowing between nodes.
+
+The application continuously calculates monthly equivalents regardless of original frequency.
+
+The whiteboard becomes a living financial model.
+
+Ultimate goal:
+
+Allow users to experiment with financial scenarios visually rather than through spreadsheets.
+
+-----------------------------------------
+
+# 2. Problem Statement
+
+Traditional budgeting software answers:
+
+"What happened?"
+
+This project answers:
+
+"What happens if..."
+
+Current pain points:
+
+• Spreadsheets become complicated
+• Dependencies are difficult to visualize
+• Percent-based budgeting is cumbersome
+• Cash flow is hidden
+• Downstream effects are difficult to understand
+• Existing budgeting apps focus on transaction tracking
+
+Target motivation:
+
+Financial planning
+Scenario modeling
+Cash flow visualization
+Budget experimentation
+
+-----------------------------------------
+
+# 3. Goals and Success Criteria
+
+Goal 1
+
+Visual Financial Whiteboard
+
+Priority:
+Must Have
+
+Success Criteria
+
+• Infinite canvas
+• Draggable nodes
+• Zoom
+• Pan
+• Smooth interactions
+
+-----------------------------------------
+
+Goal 2
+
+Money Flow Modeling
+
+Success
+
+Every connection represents actual money movement.
+
+Changing one flow updates downstream calculations.
+
+-----------------------------------------
+
+Goal 3
+
+Formula System
+
+Success
+
+Nodes may reference other nodes.
+
+Example
+
+Salary * .30
+
+Savings + Investment
+
+Mortgage / 2
+
+Salary.outflow * .15
+
+-----------------------------------------
+
+Goal 4
+
+Frequency Normalization
+
+Success
+
+All frequencies automatically convert into monthly values.
+
+Supported examples
+
+Daily
+
+Weekly
+
+Biweekly
+
+Semi-monthly
+
+Monthly
+
+Quarterly
+
+Yearly
+
+Custom
+
+-----------------------------------------
+
+Goal 5
+
+Offline First
+
+Success
+
+No login
+
+Everything stored locally
+
+Export JSON
+
+Import JSON
+
+-----------------------------------------
+
+Goal 6
+
+Animated Flow Mode
+
+Success
+
+Money visibly travels through ribbons.
+
+This is considered a flagship feature.
+
+-----------------------------------------
+
+# 4. Target Users and Use Cases
+
+Primary Users
+
+Individuals
+
+Financial planners
+
+Families
+
+Small business owners
+
+Students
+
+People planning retirement
+
+Startup founders
+
+-----------------------------------------
+
+Typical Use Cases
+
+Model monthly budgets
+
+Plan retirement
+
+Test salary changes
+
+Visualize business cash flow
+
+Model investments
+
+Debt payoff planning
+
+Emergency fund planning
+
+Vacation planning
+
+Rental property cash flow
+
+-----------------------------------------
+
+# 5. Current Concept / Product Scope
+
+IN SCOPE
+
+Infinite whiteboard
+
+Money nodes
+
+Ribbon connections
+
+Formula engine
+
+Monthly calculations
+
+Hover tooltips
+
+Themes
+
+Import
+
+Export
+
+Animation
+
+Local storage
+
+Notes
+
+Node colors
+
+OUT OF SCOPE
+
+Bank integrations
+
+Transaction imports
+
+Plaid
+
+Online accounts
+
+User authentication
+
+Collaboration
+
+Real-time sync
+
+Tax calculations
+
+Investment APIs
+
+-----------------------------------------
+
+# 6. Functional Requirements
+
+Requirement
+
+Create Node
+
+Priority
+
+Must Have
+
+Description
+
+User drags a box onto canvas.
+
+Wizard opens.
+
+Required fields
+
+Name
+
+Incoming source
+
+Amount or Formula
+
+Frequency
+
+Optional
+
+Color
+
+Notes
+
+Acceptance
+
+Node appears immediately.
+
+-----------------------------------------
+
+Requirement
+
+Connect Nodes
+
+Priority
+
+Must Have
+
+Description
+
+Nodes connect using curved proportional ribbons.
+
+Acceptance
+
+Ribbon thickness reflects monthly value.
+
+-----------------------------------------
+
+Requirement
+
+Formula Engine
+
+Priority
+
+Must Have
+
+Description
+
+Support expressions.
+
+Examples
+
+Salary * .30
+
+Rent + HOA
+
+Salary.outflow / 3
+
+Acceptance
+
+Live recalculation.
+
+Circular references detected.
+
+-----------------------------------------
+
+Requirement
+
+Hover Ribbon
+
+Priority
+
+Must Have
+
+Display
+
+Source
+
+Destination
+
+Original amount
+
+Frequency
+
+Monthly equivalent
+
+Formula
+
+Notes
+
+-----------------------------------------
+
+Requirement
+
+Themes
+
+Priority
+
+Should Have
+
+Themes
+
+Light
+
+Dark
+
+Nord
+
+Dracula
+
+Tokyo Night
+
+Catppuccin
+
+Blueprint
+
+Paper
+
+Notebook
+
+Forest
+
+Slate
+
+-----------------------------------------
+
+Requirement
+
+Node Notes
+
+Priority
+
+Should Have
+
+Collapsible notes attached to nodes.
+
+-----------------------------------------
+
+Requirement
+
+Flow Animation
+
+Priority
+
+Should Have
+
+Animated particles travel through ribbons.
+
+-----------------------------------------
+
+Requirement
+
+Import / Export
+
+Priority
+
+Must Have
+
+JSON compatible with application.
+
+-----------------------------------------
+
+Requirement
+
+Auto Save
+
+Priority
+
+Must Have
+
+Persist continuously.
+
+-----------------------------------------
+
+# 7. Non Functional Requirements
+
+Performance
+
+Smooth pan
+
+Smooth zoom
+
+60 FPS preferred
+
+Instant recalculation
+
+Privacy
+
+No telemetry
+
+No accounts
+
+No tracking
+
+Accessibility
+
+Keyboard navigation
+
+High contrast themes
+
+ARIA labels
+
+Responsive
+
+Desktop first
+
+Tablet supported
+
+Mobile optional
+
+Maintainability
+
+Strict TypeScript
+
+Reusable components
+
+Modular architecture
+
+-----------------------------------------
+
+# 8. Technical Direction
+
+Confirmed Decision
+
+React
+
+Reason
+
+Large ecosystem
+
+-----------------------------------------
+
+Confirmed Decision
+
+TypeScript
+
+Reason
+
+Strong typing
+
+-----------------------------------------
+
+Confirmed Decision
+
+Vite
+
+Reason
+
+Fast startup
+
+-----------------------------------------
+
+Confirmed Decision
+
+React Flow
+
+Reason
+
+Excellent node editing
+
+-----------------------------------------
+
+Recommendation
+
+d3-sankey
+
+Purpose
+
+Ribbon geometry inspiration
+
+Do NOT use automatic layout.
+
+-----------------------------------------
+
+Recommendation
+
+MathJS
+
+Purpose
+
+Formula parser
+
+Never use eval().
+
+-----------------------------------------
+
+Confirmed Decision
+
+Zustand
+
+Reason
+
+Simpler than Redux.
+
+-----------------------------------------
+
+Recommendation
+
+Floating UI
+
+Purpose
+
+Menus
+
+Tooltips
+
+-----------------------------------------
+
+Recommendation
+
+Framer Motion
+
+Purpose
+
+Animations
+
+-----------------------------------------
+
+Recommendation
+
+Dexie
+
+Purpose
+
+IndexedDB wrapper
+
+Fallback
+
+LocalStorage acceptable for POC.
+
+-----------------------------------------
+
+Hosting
+
+Confirmed
+
+GitHub Pages
+
+-----------------------------------------
+
+Authentication
+
+Confirmed
+
+None
+
+-----------------------------------------
+
+Backend
+
+Confirmed
+
+None
+
+-----------------------------------------
+
+# 9. Existing Assets and Materials
+
+Reference
+
+Monarch Money Sankey Screenshot
+
+Purpose
+
+Visual inspiration only
+
+Reference
+
+https://bklit.com/docs/components/sankey-chart
+
+Purpose
+
+Ribbon rendering inspiration
+
+Reference
+
+Excalidraw
+
+Purpose
+
+Interaction model
+
+Import/Export philosophy
+
+Offline-first philosophy
+
+No credentials
+
+No repositories exist yet.
+
+-----------------------------------------
+
+# 10. Key Decisions Made
+
+Manual layout
+
+Reason
+
+Users should organize ideas spatially.
+
+Offline first
+
+Reason
+
+Reduce complexity.
+
+No login
+
+Reason
+
+Fast access.
+
+Formula engine
+
+Reason
+
+Major differentiator.
+
+Graph model
+
+Reason
+
+Natural representation.
+
+Animated flow mode
+
+Reason
+
+Signature feature.
+
+-----------------------------------------
+
+# 11. Open Questions
+
+Open Question
+
+Expression language syntax
+
+Options
+
+MathJS
+
+Custom parser
+
+Recommendation
+
+MathJS
+
+-----------------------------------------
+
+Open Question
+
+Custom frequencies
+
+Recommendation
+
+Support later.
+
+-----------------------------------------
+
+Open Question
+
+Undo/Redo
+
+Recommendation
+
+Implement after MVP.
+
+-----------------------------------------
+
+Open Question
+
+Image export
+
+Recommendation
+
+PNG first
+
+SVG second
+
+PDF later
+
+-----------------------------------------
+
+Open Question
+
+Node categories
+
+Recommendation
+
+Allow optional categories only.
+
+-----------------------------------------
+
+# 12. Risks, Constraints, Dependencies
+
+Risk
+
+Circular references
+
+Mitigation
+
+Directed graph cycle detection.
+
+Risk
+
+Large boards
+
+Mitigation
+
+Viewport virtualization if needed.
+
+Risk
+
+Ribbon rendering
+
+Mitigation
+
+Custom SVG paths.
+
+Constraint
+
+GitHub Pages
+
+Static hosting only.
+
+Constraint
+
+No backend.
+
+-----------------------------------------
+
+# 13. Implementation Plan
+
+Phase 1
+
+Project setup
+
+Tasks
+
+Create Vite project
+
+Configure TypeScript
+
+Tailwind
+
+React Flow
+
+Definition of Done
+
+Canvas renders.
+
+-----------------------------------------
+
+Phase 2
+
+Whiteboard
+
+Tasks
+
+Pan
+
+Zoom
+
+Drag nodes
+
+Definition
+
+Working editor.
+
+-----------------------------------------
+
+Phase 3
+
+Node wizard
+
+Tasks
+
+Create
+
+Edit
+
+Delete
+
+Definition
+
+Node lifecycle complete.
+
+-----------------------------------------
+
+Phase 4
+
+Ribbon edges
+
+Tasks
+
+Curved SVG
+
+Thickness calculation
+
+Hover
+
+Definition
+
+Money visibly flows.
+
+-----------------------------------------
+
+Phase 5
+
+Formula engine
+
+Tasks
+
+Parser
+
+Dependency graph
+
+Cycle detection
+
+Definition
+
+Live recalculation.
+
+-----------------------------------------
+
+Phase 6
+
+Persistence
+
+Tasks
+
+Autosave
+
+Import
+
+Export
+
+Definition
+
+State survives refresh.
+
+-----------------------------------------
+
+Phase 7
+
+Themes
+
+Tasks
+
+Canvas
+
+Nodes
+
+Colors
+
+Definition
+
+Multiple complete themes.
+
+-----------------------------------------
+
+Phase 8
+
+Flow mode
+
+Tasks
+
+Particle animation
+
+Play
+
+Pause
+
+Definition
+
+Money visibly moves.
+
+-----------------------------------------
+
+# 14. Suggested First Tasks
+
+1
+
+Create Vite React TypeScript project.
+
+2
+
+Configure Tailwind.
+
+3
+
+Add React Flow.
+
+4
+
+Implement infinite whiteboard.
+
+5
+
+Implement draggable nodes.
+
+6
+
+Create node wizard.
+
+7
+
+Store nodes in Zustand.
+
+8
+
+Persist using LocalStorage.
+
+9
+
+Implement curved SVG edges.
+
+10
+
+Implement frequency conversion.
+
+-----------------------------------------
+
+# 15. Recommended Project Structure
+
+src/
+
+    app/
+
+    components/
+
+        canvas/
+
+        nodes/
+
+        edges/
+
+        dialogs/
+
+        toolbar/
+
+        inspector/
+
+    engine/
+
+        formulas/
+
+        graph/
+
+        frequency/
+
+        validation/
+
+    hooks/
+
+    models/
+
+    store/
+
+    themes/
+
+    utils/
+
+    assets/
+
+    styles/
+
+public/
+
+docs/
+
+tests/
+
+-----------------------------------------
+
+# 16. Data Model
+
+BudgetNode
+
+id
+
+name
+
+position
+
+color
+
+notes
+
+incoming
+
+outgoing
+
+monthlyInflow
+
+monthlyOutflow
+
+BudgetEdge
+
+id
+
+from
+
+to
+
+formula
+
+amount
+
+frequency
+
+notes
+
+Example
+
+{
+  "id":"salary",
+  "name":"Salary",
+  "color":"green",
+  "notes":[
+    "Main income"
+  ]
+}
+
+Edge
+
+{
+  "id":"1",
+  "from":"salary",
+  "to":"rent",
+  "formula":"Salary * .30",
+  "frequency":"monthly"
+}
+
+-----------------------------------------
+
+# 17. User Flows
+
+Create Node
+
+Open application
+
+Drag node
+
+Wizard appears
+
+Enter information
+
+Save
+
+Node appears
+
+-----------------------------------------
+
+Connect Flow
+
+Select source
+
+Drag to destination
+
+Enter amount/formula
+
+Ribbon appears
+
+-----------------------------------------
+
+Import
+
+Open file
+
+Parse JSON
+
+Validate
+
+Replace current board
+
+-----------------------------------------
+
+Export
+
+Serialize graph
+
+Download JSON
+
+-----------------------------------------
+
+Error States
+
+Circular dependency
+
+Invalid formula
+
+Unknown node reference
+
+Import schema mismatch
+
+-----------------------------------------
+
+# 18. API / Integration Notes
+
+No backend.
+
+No APIs.
+
+No authentication.
+
+Potential future
+
+PNG export
+
+SVG export
+
+PDF export
+
+-----------------------------------------
+
+# 19. Testing and Quality
+
+Unit Tests
+
+Frequency conversion
+
+Formula parser
+
+Graph traversal
+
+Cycle detection
+
+Integration Tests
+
+Node creation
+
+Connection creation
+
+Import
+
+Export
+
+E2E
+
+Create board
+
+Save
+
+Reload
+
+Verify identical
+
+Lint
+
+ESLint
+
+Type Checking
+
+Strict TypeScript
+
+-----------------------------------------
+
+# 20. UX / UI Direction
+
+Overall feel
+
+Excalidraw simplicity
+
+Monarch visualization
+
+Clean
+
+Minimal
+
+Little chrome
+
+Large canvas
+
+Inspector panel
+
+Floating toolbar
+
+Animated ribbons
+
+Responsive zoom
+
+Subtle shadows
+
+Rounded nodes
+
+Grid optional
+
+-----------------------------------------
+
+# 21. Tone / Brand
+
+Friendly
+
+Professional
+
+Minimal text
+
+No finance jargon unless needed
+
+Clear validation messages
+
+Examples
+
+"Formula contains a circular reference."
+
+"Unknown node 'Savings'."
+
+-----------------------------------------
+
+# 22. Constraints for Coding Agent
+
+DO NOT
+
+Add authentication
+
+Add backend
+
+Add cloud sync
+
+Integrate banks
+
+Track transactions
+
+Turn this into budgeting software
+
+Replace manual layout with automatic Sankey layout
+
+Use eval()
+
+Change offline-first philosophy
+
+Change import/export philosophy
+
+Assume spreadsheet paradigm
+
+This is a graph editor.
+
+-----------------------------------------
+
+# 23. Final Summary
+
+FlowBudget is an offline-first visual financial modeling application inspired by Excalidraw and Sankey diagrams. Users construct directed graphs representing the flow of money between financial entities. Nodes represent accounts or categories, while proportional ribbons represent cash flow. The application continuously recalculates monthly values, supports formulas referencing other nodes, and enables rapid "what-if" scenario analysis without requiring bank integrations, accounts, or a backend.
+
+The first implementation milestone is a polished local-first React application featuring an infinite whiteboard, draggable nodes, ribbon connections, frequency normalization, JSON import/export, and local persistence. Once that foundation is complete, the signature "Flow Mode" animation should be added to visually show money traveling through the graph, reinforcing the application's identity as a financial modeling tool rather than a traditional budgeting application.
+</pre>
+</body>
+</html>
