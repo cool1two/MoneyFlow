@@ -59,6 +59,44 @@ h1 {
   letter-spacing: 0;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toolbar-button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #0f766e;
+  border-radius: 7px;
+  color: #ffffff;
+  background: #0f766e;
+  font-size: 0.86rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.toolbar-button:hover {
+  background: #115e59;
+}
+
+.toolbar-button.danger {
+  border-color: #b91c1c;
+  background: #b91c1c;
+}
+
+.toolbar-button.danger:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+.toolbar-button:disabled {
+  border-color: #cbd5e1;
+  color: #64748b;
+  background: #e2e8f0;
+  cursor: not-allowed;
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -71,6 +109,38 @@ h1 {
   font-size: 0.82rem;
   font-weight: 700;
   white-space: nowrap;
+}
+
+.selected-node-editor {
+  position: absolute;
+  z-index: 10;
+  right: 18px;
+  top: 78px;
+  display: grid;
+  gap: 6px;
+  width: min(280px, calc(100vw - 36px));
+  padding: 12px;
+  border: 1px solid #d7dee2;
+  border-radius: 8px;
+  background: #fbfcfc;
+  box-shadow: 0 14px 35px rgb(15 23 42 / 14%);
+}
+
+.selected-node-editor label {
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.selected-node-editor input {
+  width: 100%;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid #9fb6ad;
+  border-radius: 7px;
+  color: #172026;
+  background: #ffffff;
+  font-weight: 700;
 }
 
 .canvas-stage {
@@ -176,5 +246,10 @@ h1 {
   .topbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 }
