@@ -1,9 +1,10 @@
-export type Frequency = "daily" | "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly";
+export type Frequency = "daily" | "weekly" | "biweekly" | "semimonthly" | "monthly" | "quarterly" | "yearly";
 
 const monthlyMultipliers: Record<Frequency, number> = {
   daily: 365 / 12,
   weekly: 52 / 12,
   biweekly: 26 / 12,
+  semimonthly: 2,
   monthly: 1,
   quarterly: 1 / 3,
   yearly: 1 / 12,
