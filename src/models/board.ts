@@ -12,6 +12,7 @@ export type MoneyFlow = {
   target: string;
   amount: number;
   frequency: Frequency;
+  isDraft?: boolean;
 };
 
 export type ExternalInflow = {

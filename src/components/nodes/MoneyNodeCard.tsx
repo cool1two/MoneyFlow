@@ -3,7 +3,7 @@ import type { MoneyFlowNode } from "../../engine/graph/reactFlowAdapter";
 import { formatMoney } from "../../utils/formatMoney";
 
 export function MoneyNodeCard({ data }: NodeProps<MoneyFlowNode>) {
-  const remaining = data.inflow - data.outflow;
+  const remaining = data.externalInflow + data.inflow - data.outflow;
 
   return (
     <article className="money-node-card">

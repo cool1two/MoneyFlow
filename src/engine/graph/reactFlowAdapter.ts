@@ -26,15 +26,22 @@ export function toReactFlowNodes(board: BoardState): MoneyFlowNode[] {
 
 export function toReactFlowEdges(board: BoardState): Edge[] {
   const monthlyFlows = getMonthlyFlows(board);
-  const maxMonthlyFlow = Math.max(...monthlyFlows.map((flow) => flow.monthlyAmount));
+  const maxMonthlyFlow = Math.max(1, ...monthlyFlows.map((flow) => flow.monthlyAmount));
 
   return monthlyFlows.map((flow) => ({
     id: flow.id,
     source: flow.source,
     target: flow.target,
-    label: `${formatMoney(flow.monthlyAmount)}/mo (${formatMoney(flow.amount)} ${formatFrequency(flow.frequency)})`,
+    label: flow.isDraft
+      ? "Set inflow"
+      : `${formatMoney(flow.monthlyAmount)}/mo (${formatMoney(flow.amount)} ${formatFrequency(flow.frequency)})`,
     animated: true,
     type: "smoothstep",
-    style: { strokeWidth: Math.max(2, Math.round((flow.monthlyAmount / maxMonthlyFlow) * 9)) },
+    style: {
+      strokeWidth:
+        flow.monthlyAmount > 0
+          ? Math.max(2, Math.round((flow.monthlyAmount / maxMonthlyFlow) * 9))
+          : 2,
+    },
   }));
 }

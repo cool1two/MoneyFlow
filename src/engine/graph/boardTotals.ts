@@ -29,6 +29,6 @@ export function getNodeTotals(board: BoardState, nodeId: string): MoneyNodeTotal
       if (flow.source === nodeId) totals.outflow += flow.monthlyAmount;
       return totals;
     },
-    { inflow: externalInflow, externalInflow, outflow: 0 },
+    { inflow: 0, externalInflow, outflow: 0 },
   );
 }
