@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "board": {
+    "nodes": [
+      { "id": "income", "name": "Income", "position": { "x": 0, "y": 0 } },
+      { "id": "rent", "name": "Rent", "position": { "x": 200, "y": 0 } }
+    ],
+    "flows": [
+      { "id": "negative", "source": "income", "target": "rent", "amount": -100, "frequency": "monthly" }
+    ],
+    "externalInflows": []
+  }
+}

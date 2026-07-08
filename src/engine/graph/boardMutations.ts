@@ -1,4 +1,5 @@
 import type { BoardState, ExternalInflow, MoneyFlow } from "../../models/board";
+import { assertValidBoard } from "./boardValidation";
 
 const createId = (prefix: string) => {
   if (globalThis.crypto && "randomUUID" in globalThis.crypto) {
@@ -33,7 +34,7 @@ export function addNode(board: BoardState): BoardState {
 }
 
 export function addFlow(board: BoardState, source: string, target: string): BoardState {
-  return {
+  const nextBoard: BoardState = {
     ...board,
     flows: [
       ...board.flows,
@@ -43,10 +44,13 @@ export function addFlow(board: BoardState, source: string, target: string): Boar
         target,
         amount: 0,
         frequency: "monthly",
-        isDraft: true,
       },
     ],
   };
+
+  assertValidBoard(nextBoard);
+
+  return nextBoard;
 }
 
 export function deleteNode(board: BoardState, nodeId: string): BoardState {
@@ -65,6 +69,16 @@ export function deleteFlow(board: BoardState, flowId: string): BoardState {
     ...board,
     flows: board.flows.filter((flow) => flow.id !== flowId),
   };
+}
+
+export function commitFlow(board: BoardState, flowId: string): BoardState {
+  const flow = board.flows.find((item) => item.id === flowId);
+
+  if (flow && flow.amount <= 0) {
+    return deleteFlow(board, flowId);
+  }
+
+  return board;
 }
 
 export function moveNode(
@@ -86,6 +100,13 @@ export function updateExternalInflow(
   updates: Pick<ExternalInflow, "amount" | "frequency">,
 ): BoardState {
   const existingInflow = board.externalInflows.find((inflow) => inflow.target === target);
+
+  if (updates.amount <= 0) {
+    return {
+      ...board,
+      externalInflows: board.externalInflows.filter((inflow) => inflow.target !== target),
+    };
+  }
 
   if (!existingInflow) {
     return {
@@ -110,14 +131,10 @@ export function updateFlow(
   flowId: string,
   updates: Pick<MoneyFlow, "amount" | "frequency">,
 ): BoardState {
-  const currentFlow = board.flows.find((flow) => flow.id === flowId);
-
   return {
     ...board,
     flows: board.flows.map((flow) =>
-      flow.id === flowId
-        ? { ...flow, ...updates, isDraft: updates.amount > 0 ? false : flow.isDraft }
-        : flow,
+      flow.id === flowId ? { ...flow, ...updates } : flow,
     ),
   };
 }

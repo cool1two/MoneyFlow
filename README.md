@@ -1,6 +1,8 @@
 # MoneyFlow
 
-MoneyFlow is an offline-first visual financial modeler. It is not a transaction tracker or traditional budgeting app. The graph is the product: users model money moving between boxes to answer "what happens if" questions.
+MoneyFlow is an offline-first visual financial modeler. It is not a transaction
+tracker or traditional budgeting app. The graph is the product: users model
+money moving between boxes to answer "what happens if" questions.
 
 ## Do Not Lose This Context
 
@@ -9,8 +11,10 @@ MoneyFlow is an offline-first visual financial modeler. It is not a transaction 
 - No cloud database.
 - Offline-first browser storage.
 - Manual whiteboard layout.
-- React Flow is a view layer, not the domain source of truth.
-- The domain board model owns nodes, flows, external inflows, and calculations.
+- React Flow is a renderer, not the domain source of truth.
+- BoardState is the canonical model.
+- The graph engine owns board rules, selectors, calculations, validation, and
+  import/export parsing.
 - Do not pivot toward bank integrations or transaction tracking.
 
 ## Current POC
@@ -19,12 +23,20 @@ The current POC includes:
 
 - Vite + React + TypeScript.
 - React Flow canvas.
-- Money nodes with inflow, outflow, external inflow, and remaining totals.
-- Monthly normalization for daily, weekly, biweekly, semimonthly, monthly, quarterly, and yearly values.
+- Draggable money nodes.
+- Add, rename, move, and delete nodes.
+- Link and delete transfers between nodes.
+- Node-perspective transfer editing through incoming transfers.
+- External deposits on root nodes.
+- Monthly normalization for daily, weekly, biweekly, semimonthly, monthly,
+  quarterly, and yearly values.
 - Proportional animated flow edges.
-- Zustand board state.
-- localStorage persistence for board layout/state.
-- Frequency unit tests.
+- Zustand UI coordination.
+- localStorage persistence centered on BoardState.
+- Export/import of versioned BoardState JSON.
+- Import validation and invalid JSON fixtures.
+- Engine tests for frequency, totals, selectors, validation, mutations, and
+  import/export.
 
 ## Development
 
@@ -38,6 +50,12 @@ Start the dev server:
 
 ```bash
 npm run dev -- --host 0.0.0.0 --port 5173
+```
+
+The forwarded development URL is:
+
+```txt
+http://localhost:5173/MoneyFlow/
 ```
 
 Run type checks:
@@ -67,14 +85,53 @@ npm run preview
 ## Architecture
 
 ```txt
-src/models/              Domain types
-src/data/mockBoard.ts    POC board source data
-src/engine/frequency/    Frequency normalization
-src/engine/graph/        Board calculations and React Flow adapter
-src/components/nodes/    React Flow node components
-src/store/               Zustand board store
-src/utils/               Formatting helpers
+src/models/                    Domain types
+src/data/mockBoard.ts          POC board source data
+src/engine/frequency/          Frequency normalization
+src/engine/graph/              Board mutations, selectors, totals, validation
+src/engine/persistence/        Versioned BoardState file parsing
+src/engine/graph/reactFlowAdapter.ts
+                                BoardState to React Flow view adapter
+src/browser/                   Browser-only file download behavior
+src/components/canvas/         React Flow canvas composition
+src/components/inspector/      Node and transfer editing panel
+src/components/nodes/          React Flow node component
+src/components/toolbar/        Board actions and import/export UI
+src/store/                     Zustand board/UI coordination
+src/utils/                     Formatting helpers
 ```
+
+The architectural constitution is in `docs/constitution.txt`. In short:
+BoardState is canonical, the graph engine is the product, and React Flow is
+replaceable renderer infrastructure.
+
+## BoardState
+
+BoardState contains:
+
+- `nodes`: named boxes with manual positions.
+- `flows`: transfers between nodes with amount and frequency.
+- `externalInflows`: deposits into nodes from outside the graph.
+
+BoardState does not contain React Flow nodes, React Flow edges, zoom, pan,
+selection, or draft editing state.
+
+## Import/Export
+
+Exported files are versioned JSON:
+
+```ts
+type BoardFile = {
+  version: 1;
+  board: BoardState;
+};
+```
+
+Import validates structure, supported frequencies, node references, self-loops,
+duplicate IDs, negative values, and other BoardState rules before replacing the
+current board.
+
+Invalid import fixtures live in `docs/import-fixtures/`.
 
 ## GitHub Pages
 
@@ -88,18 +145,21 @@ This supports deployment under the repository path on GitHub Pages.
 
 ## POC Notes
 
-This is still proof-of-concept code. Some shortcuts are intentional:
+This is still proof-of-concept code. The current priority is architecture and
+learning speed, not production hardening.
 
-- Mock board data is static.
-- localStorage has no schema validation or migrations.
-- Import/export UI is not implemented yet.
-- Add/edit/delete nodes and flows are not implemented yet.
-- Formula support is intentionally deferred.
+Current intentional limits:
 
-Next milestone:
+- No backend or sync.
+- No formulas yet.
+- No Sankey renderer yet.
+- No themes or visual polish pass yet.
+- localStorage persistence is suitable for POC work.
+- Accessibility and error presentation are not production-ready.
 
-1. Add/edit/delete nodes.
-2. Add/edit/delete flows.
-3. Export JSON.
-4. Import JSON.
-5. Tighten board model as the source of truth.
+Next architecture direction:
+
+1. Continue moving business rules into the graph engine.
+2. Keep persistence centered on BoardState.
+3. Expand tests where they accelerate refactoring confidence.
+4. Only add formulas after the engine boundary remains stable.

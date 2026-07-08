@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "board": {
+    "nodes": [
+      { "id": "income", "name": "Income", "position": { "x": 0, "y": 0 } }
+    ],
+    "flows": [
+      { "id": "loop", "source": "income", "target": "income", "amount": 100, "frequency": "monthly" }
+    ],
+    "externalInflows": []
+  }
+}

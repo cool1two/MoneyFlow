@@ -1,0 +1,10 @@
+1. BoardState is the canonical source of truth.
+2. The Graph Engine is the product.
+3. React Flow is an adapter, not the model.
+4. Business logic belongs in the engine.
+5. Manual layout is part of the user experience.
+6. Offline-first is a core architectural constraint.
+7. Import/export serializes BoardState, never renderer state.
+8. The renderer must be replaceable.
+9. Deterministic calculations are preferred over convenience.
+10. New features should strengthen the engine before the UI.
