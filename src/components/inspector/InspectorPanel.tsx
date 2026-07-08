@@ -47,6 +47,7 @@ export function InspectorPanel({
 
   const selectedExternalInflow = getExternalInflowForNode(board, selectedNode.id);
   const selectedIncomingFlows = getIncomingFlowsForNode(board, selectedNode.id);
+  const hasPositiveExternalInflow = (selectedExternalInflow?.amount ?? 0) > 0;
 
   return (
     <aside className="inspector-panel" aria-label="Inspector panel">
@@ -64,7 +65,7 @@ export function InspectorPanel({
           />
         </section>
 
-        {(isRootNode(board, selectedNode.id) || selectedExternalInflow) && (
+        {(isRootNode(board, selectedNode.id) || hasPositiveExternalInflow) && (
           <section className="inspector-section">
             <p className="inspector-kicker">Deposits</p>
             <AmountInput

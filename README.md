@@ -17,6 +17,11 @@ money moving between boxes to answer "what happens if" questions.
   import/export parsing.
 - Do not pivot toward bank integrations or transaction tracking.
 
+## Architectural Decision Record
+1. Visible graph topology defines financial dependencies.
+
+- MoneyFlow does not create hidden dependencies through node-to-node formula references. The graph itself is the dependency graph. All financial computation should be explainable by traversing visible edges on the board.
+
 ## Current POC
 
 The current POC includes:
@@ -87,7 +92,9 @@ npm run preview
 ```txt
 src/models/                    Domain types
 src/data/mockBoard.ts          POC board source data
+src/engine/analysis/           Graph analysis, diagnostics, simulation contracts
 src/engine/frequency/          Frequency normalization
+src/engine/formulas/           Formula layer contracts
 src/engine/graph/              Board mutations, selectors, totals, validation
 src/engine/persistence/        Versioned BoardState file parsing
 src/engine/graph/reactFlowAdapter.ts
@@ -104,6 +111,10 @@ src/utils/                     Formatting helpers
 The architectural constitution is in `docs/constitution.txt`. In short:
 BoardState is canonical, the graph engine is the product, and React Flow is
 replaceable renderer infrastructure.
+
+Formula design notes are in `docs/formula-design.md`. Formulas must not create
+hidden node-to-node dependencies; visible graph topology defines financial
+dependencies.
 
 ## BoardState
 
@@ -163,3 +174,21 @@ Next architecture direction:
 2. Keep persistence centered on BoardState.
 3. Expand tests where they accelerate refactoring confidence.
 4. Only add formulas after the engine boundary remains stable.
+
+## Milestone 7 Consideration: Zod
+
+Zod is a good candidate for runtime schema parsing at the import/export
+boundary. It could replace some hand-written structural checks in
+`parseBoardState` and `parseBoardFile`, while preserving TypeScript-friendly
+parsed output.
+
+Recommended scope:
+
+- Use Zod for untrusted JSON parsing.
+- Use Zod for BoardState file/schema version parsing.
+- Use Zod to support future schema migrations.
+- Keep graph meaning in the MoneyFlow engine.
+
+Do not use Zod as the graph engine. Zod can validate shape, but MoneyFlow must
+continue to own graph rules, diagnostics, cycle detection, evaluation ordering,
+financial meaning, formulas, and simulation.

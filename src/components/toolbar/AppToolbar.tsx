@@ -31,6 +31,7 @@ export function AppToolbar({
   versionLabel,
 }: AppToolbarProps) {
   const importInputRef = useRef<HTMLInputElement>(null);
+  const canExportBoard = board.nodes.length > 0;
 
   const handleImportBoard = async (file: File | undefined) => {
     if (!file) return;
@@ -63,7 +64,12 @@ export function AppToolbar({
         <button className="toolbar-button subtle" type="button" onClick={onResetDemo}>
           Reset demo
         </button>
-        <button className="toolbar-button subtle" type="button" onClick={() => downloadBoardFile(board)}>
+        <button
+          className="toolbar-button subtle"
+          type="button"
+          onClick={() => downloadBoardFile(board)}
+          disabled={!canExportBoard}
+        >
           Export JSON
         </button>
         <input

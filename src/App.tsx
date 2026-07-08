@@ -4,7 +4,7 @@ import { InspectorPanel } from "./components/inspector/InspectorPanel";
 import { AppToolbar } from "./components/toolbar/AppToolbar";
 import { useBoardStore } from "./store/boardStore";
 
-const versionLabel = "Milestone 5.0.0";
+const versionLabel = "Milestone 6.0.0";
 
 export default function App() {
   const board = useBoardStore((state) => state.board);

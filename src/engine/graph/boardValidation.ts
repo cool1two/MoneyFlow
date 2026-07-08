@@ -75,24 +75,26 @@ export function parseBoardState(value: unknown): BoardState {
         frequency: flow.frequency,
       };
     }),
-    externalInflows: externalInflows.map((inflow) => {
-      if (
-        !isRecord(inflow) ||
-        !isString(inflow.id) ||
-        !isString(inflow.target) ||
-        !isNumber(inflow.amount) ||
-        !isFrequency(inflow.frequency)
-      ) {
-        throw new Error("Invalid external inflow in MoneyFlow board file.");
-      }
+    externalInflows: externalInflows
+      .map((inflow) => {
+        if (
+          !isRecord(inflow) ||
+          !isString(inflow.id) ||
+          !isString(inflow.target) ||
+          !isNumber(inflow.amount) ||
+          !isFrequency(inflow.frequency)
+        ) {
+          throw new Error("Invalid external inflow in MoneyFlow board file.");
+        }
 
-      return {
-        id: inflow.id,
-        target: inflow.target,
-        amount: inflow.amount,
-        frequency: inflow.frequency,
-      };
-    }),
+        return {
+          id: inflow.id,
+          target: inflow.target,
+          amount: inflow.amount,
+          frequency: inflow.frequency,
+        };
+      })
+      .filter((inflow) => inflow.amount > 0),
   };
 
   assertValidBoard(board);

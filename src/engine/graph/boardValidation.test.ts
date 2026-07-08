@@ -94,4 +94,16 @@ describe("validateBoard", () => {
       }).flows[0],
     ).toEqual(validBoard.flows[0]);
   });
+
+  it("strips zero external inflows while parsing board state", () => {
+    expect(
+      parseBoardState({
+        ...validBoard,
+        externalInflows: [
+          ...validBoard.externalInflows,
+          { id: "zero-deposit", target: "rent", amount: 0, frequency: "monthly" },
+        ],
+      }).externalInflows,
+    ).toEqual(validBoard.externalInflows);
+  });
 });
