@@ -1,9 +1,10 @@
 import type { BoardState } from "../../models/board";
+import type { FlowFormulaRule } from "./formulaRule";
 
 export type FlowFormula = {
   id: string;
   flowId: string;
-  expression: string;
+  rule: FlowFormulaRule;
 };
 
 export type FormulaLayer = {
@@ -23,8 +24,9 @@ export type FormulaDiagnostic = {
     | "formula.blankFlowId"
     | "formula.unknownFlow"
     | "formula.duplicateFlowFormula"
-    | "formula.blankExpression"
-    | "formula.invalidResult";
+    | "formula.invalidRule"
+    | "formula.invalidResult"
+    | "formula.blockedByCycle";
   severity: "error";
   message: string;
   formulaId?: string;
@@ -109,11 +111,11 @@ export function getFormulaLayerDiagnostics(
     }
     formulaFlowIds.add(formula.flowId);
 
-    if (!formula.expression.trim()) {
+    if (!isValidFlowFormulaRule(formula.rule)) {
       diagnostics.push({
-        code: "formula.blankExpression",
+        code: "formula.invalidRule",
         severity: "error",
-        message: `Formula ${formulaLabel} expression cannot be blank.`,
+        message: `Formula ${formulaLabel} contains an invalid rule.`,
         formulaId: formula.id,
         flowId: formula.flowId,
       });
@@ -125,4 +127,24 @@ export function getFormulaLayerDiagnostics(
 
 function formatFormulaId(formulaId: string) {
   return formulaId.trim() ? formulaId : "(blank)";
+}
+
+function isValidFlowFormulaRule(rule: FlowFormulaRule): boolean {
+  switch (rule.type) {
+    case "fixedAmount":
+      return isNonNegativeFinite(rule.amount);
+    case "percentOfTargetRemainingBeforeThisFlow":
+      return isNonNegativeFinite(rule.percent);
+    case "targetRemainingBeforeThisFlow":
+      return true;
+    case "cappedAmount":
+      return isNonNegativeFinite(rule.amount) && isNonNegativeFinite(rule.max);
+    case "min":
+    case "max":
+      return rule.rules.length > 0 && rule.rules.every(isValidFlowFormulaRule);
+  }
+}
+
+function isNonNegativeFinite(value: number) {
+  return Number.isFinite(value) && value >= 0;
 }

@@ -43,9 +43,9 @@ describe("formula result", () => {
     expect(
       createFlowFormulaFailure("formula-savings", "checking-savings", [
         {
-          code: "formula.blankExpression",
+          code: "formula.invalidRule",
           severity: "error",
-          message: "Formula formula-savings expression cannot be blank.",
+          message: "Formula formula-savings contains an invalid rule.",
           formulaId: "formula-savings",
           flowId: "checking-savings",
         },
@@ -57,9 +57,9 @@ describe("formula result", () => {
       amount: null,
       diagnostics: [
         {
-          code: "formula.blankExpression",
+          code: "formula.invalidRule",
           severity: "error",
-          message: "Formula formula-savings expression cannot be blank.",
+          message: "Formula formula-savings contains an invalid rule.",
           formulaId: "formula-savings",
           flowId: "checking-savings",
         },

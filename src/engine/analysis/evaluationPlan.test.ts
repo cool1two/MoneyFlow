@@ -26,6 +26,28 @@ describe("evaluation plan", () => {
     });
   });
 
+  it("returns deterministic evaluation order for multiple roots", () => {
+    expect(
+      getEvaluationPlan({
+        nodes: [
+          { id: "income-a", name: "Income A", position: { x: 0, y: 0 } },
+          { id: "income-b", name: "Income B", position: { x: 0, y: 100 } },
+          { id: "bills", name: "Bills", position: { x: 300, y: 0 } },
+          { id: "savings", name: "Savings", position: { x: 300, y: 100 } },
+        ],
+        externalInflows: [],
+        flows: [
+          { id: "income-a-bills", source: "income-a", target: "bills", amount: 100, frequency: "monthly" },
+          { id: "income-b-savings", source: "income-b", target: "savings", amount: 200, frequency: "monthly" },
+        ],
+      }),
+    ).toEqual({
+      status: "ready",
+      nodeIds: ["income-a", "income-b", "bills", "savings"],
+      cycles: [],
+    });
+  });
+
   it("blocks evaluation when visible graph edges create a cycle", () => {
     expect(
       getEvaluationPlan({

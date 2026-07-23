@@ -312,7 +312,15 @@ h1 {
 
 .react-flow__edge-text {
   fill: #172026;
-  font-weight: 700;
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  pointer-events: none;
+  text-rendering: geometricPrecision;
+  user-select: none;
 }
 
 .react-flow__controls-button,

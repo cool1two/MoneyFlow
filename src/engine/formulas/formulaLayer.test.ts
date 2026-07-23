@@ -38,7 +38,7 @@ describe("formula layer", () => {
         {
           id: "formula-savings",
           flowId: "checking-savings",
-          expression: "available * 0.2",
+          rule: { type: "percentOfTargetRemainingBeforeThisFlow", percent: 0.2 },
         },
       ],
     };
@@ -56,7 +56,7 @@ describe("formula layer", () => {
         {
           id: "formula-missing",
           flowId: "missing",
-          expression: "available * 0.2",
+          rule: { type: "percentOfTargetRemainingBeforeThisFlow", percent: 0.2 },
         },
       ],
     };
@@ -82,12 +82,12 @@ describe("formula layer", () => {
         {
           id: "formula-savings",
           flowId: "checking-savings",
-          expression: "available * 0.2",
+          rule: { type: "percentOfTargetRemainingBeforeThisFlow", percent: 0.2 },
         },
         {
           id: "formula-savings",
           flowId: "checking-savings",
-          expression: "available * 0.3",
+          rule: { type: "percentOfTargetRemainingBeforeThisFlow", percent: 0.3 },
         },
       ],
     });
@@ -97,20 +97,20 @@ describe("formula layer", () => {
     expect(result.errors).toContain("Flow checking-savings cannot have multiple formulas.");
   });
 
-  it("rejects blank formula expressions", () => {
+  it("rejects invalid formula rules", () => {
     const result = validateFormulaLayer(board, {
       version: 1,
       flowFormulas: [
         {
           id: "formula-savings",
           flowId: "checking-savings",
-          expression: " ",
+          rule: { type: "fixedAmount", amount: -1 },
         },
       ],
     });
 
     expect(result.valid).toBe(false);
-    expect(result.errors).toContain("Formula formula-savings expression cannot be blank.");
+    expect(result.errors).toContain("Formula formula-savings contains an invalid rule.");
   });
 
   it("returns structured diagnostics for blank formula ids and flow ids", () => {
@@ -121,7 +121,7 @@ describe("formula layer", () => {
           {
             id: " ",
             flowId: " ",
-            expression: "available",
+            rule: { type: "fixedAmount", amount: 100 },
           },
         ],
       }),

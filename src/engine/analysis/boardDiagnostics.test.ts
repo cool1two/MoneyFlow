@@ -41,4 +41,27 @@ describe("board diagnostics", () => {
       },
     ]);
   });
+
+  it("returns one diagnostic per detected cycle", () => {
+    expect(
+      getBoardDiagnostics({
+        nodes: [
+          { id: "a", name: "A", position: { x: 0, y: 0 } },
+          { id: "b", name: "B", position: { x: 100, y: 0 } },
+          { id: "c", name: "C", position: { x: 0, y: 100 } },
+          { id: "d", name: "D", position: { x: 100, y: 100 } },
+        ],
+        externalInflows: [],
+        flows: [
+          { id: "a-b", source: "a", target: "b", amount: 1, frequency: "monthly" },
+          { id: "b-a", source: "b", target: "a", amount: 1, frequency: "monthly" },
+          { id: "c-d", source: "c", target: "d", amount: 1, frequency: "monthly" },
+          { id: "d-c", source: "d", target: "c", amount: 1, frequency: "monthly" },
+        ],
+      }).map((diagnostic) => diagnostic.flowIds),
+    ).toEqual([
+      ["a-b", "b-a"],
+      ["c-d", "d-c"],
+    ]);
+  });
 });

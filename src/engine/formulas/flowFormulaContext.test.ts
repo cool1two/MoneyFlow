@@ -18,6 +18,7 @@ const board: BoardState = {
   ],
   flows: [
     { id: "income-checking", source: "income", target: "checking", amount: 2500, frequency: "monthly" },
+    { id: "income-savings", source: "income", target: "savings", amount: 100, frequency: "monthly" },
     { id: "checking-savings", source: "checking", target: "savings", amount: 500, frequency: "monthly" },
   ],
 };
@@ -28,7 +29,7 @@ const formulaLayer: FormulaLayer = {
     {
       id: "formula-savings",
       flowId: "checking-savings",
-      expression: "remaining * 0.25",
+      rule: { type: "percentOfTargetRemainingBeforeThisFlow", percent: 0.25 },
     },
   ],
 };
@@ -45,10 +46,10 @@ describe("flow formula context", () => {
     expect(context?.sourceNode.nodeId).toBe("checking");
     expect(context?.targetNode.nodeId).toBe("savings");
     expect(context?.variables).toEqual({
-      externalInflow: 0,
-      incoming: 500,
-      outgoing: 0,
-      remaining: 500,
+      targetExternalInflow: 0,
+      targetIncomingBeforeThisFlow: 100,
+      targetOutgoing: 0,
+      targetRemainingBeforeThisFlow: 100,
       currentAmount: 500,
     });
   });
@@ -58,7 +59,7 @@ describe("flow formula context", () => {
       getFlowFormulaContext(deriveBoardState(board), {
         id: "missing",
         flowId: "missing",
-        expression: "remaining",
+        rule: { type: "targetRemainingBeforeThisFlow" },
       }),
     ).toBeUndefined();
   });
@@ -72,12 +73,12 @@ describe("flow formula context", () => {
           {
             id: "formula-checking",
             flowId: "income-checking",
-            expression: "incoming",
+            rule: { type: "targetRemainingBeforeThisFlow" },
           },
           {
             id: "formula-missing",
             flowId: "missing",
-            expression: "incoming",
+            rule: { type: "targetRemainingBeforeThisFlow" },
           },
         ],
       }).map((context) => context.formula.id),

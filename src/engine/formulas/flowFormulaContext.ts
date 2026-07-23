@@ -4,10 +4,10 @@ import type { NodeEvaluationContext } from "../analysis/nodeEvaluationContext";
 import type { FlowFormula, FormulaLayer } from "./formulaLayer";
 
 export type FlowFormulaVariables = {
-  externalInflow: number;
-  incoming: number;
-  outgoing: number;
-  remaining: number;
+  targetExternalInflow: number;
+  targetIncomingBeforeThisFlow: number;
+  targetOutgoing: number;
+  targetRemainingBeforeThisFlow: number;
   currentAmount: number;
 };
 
@@ -52,12 +52,13 @@ export function getFlowFormulaContext(
     sourceNode,
     targetNode,
     variables: {
-      externalInflow: targetNode.totals.externalInflow,
-      incoming: targetNode.totals.inflow,
-      outgoing: targetNode.totals.outflow,
-      remaining:
+      targetExternalInflow: targetNode.totals.externalInflow,
+      targetIncomingBeforeThisFlow: targetNode.totals.inflow - flow.monthlyAmount,
+      targetOutgoing: targetNode.totals.outflow,
+      targetRemainingBeforeThisFlow:
         targetNode.totals.externalInflow +
         targetNode.totals.inflow -
+        flow.monthlyAmount -
         targetNode.totals.outflow,
       currentAmount: flow.monthlyAmount,
     },

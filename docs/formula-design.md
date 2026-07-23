@@ -53,6 +53,21 @@ Acyclic boards can evaluate in topological order.
 Cyclic boards must return diagnostics and avoid producing misleading formula
 results until a cycle strategy is explicitly designed.
 
+Formula layer evaluation must block when:
+
+- The visible graph evaluation is blocked.
+- The formula layer references missing flows.
+- The formula layer contains invalid rules.
+- More than one formula targets the same flow.
+
+Formula results must apply to a derived projection. They must not mutate
+canonical `BoardState`. The original visible flow amount remains the saved
+board value unless the user explicitly commits a formula result in a future UI.
+
+Simulation can run against either plain `DerivedBoardState` or the
+formula-adjusted projection. Formula-adjusted simulation results remain
+derived-only and must not write back to `BoardState`.
+
 ## Formula Scope
 
 Early formula support should be local and constrained.
@@ -64,13 +79,24 @@ Good candidates:
 - Cap a transfer at a maximum amount.
 - Calculate remaining after required outgoing transfers.
 
-Initial flow formula variables:
+Initial flow formula variables avoid accidental self-reference:
 
-- `externalInflow`: monthly external inflow on the target node.
-- `incoming`: monthly incoming transfer total on the target node.
-- `outgoing`: monthly outgoing transfer total on the target node.
-- `remaining`: target node `externalInflow + incoming - outgoing`.
+- `targetExternalInflow`: monthly external inflow on the target node.
+- `targetIncomingBeforeThisFlow`: monthly incoming transfer total on the target
+  node, excluding the current flow being calculated.
+- `targetOutgoing`: monthly outgoing transfer total on the target node.
+- `targetRemainingBeforeThisFlow`: target node
+  `targetExternalInflow + targetIncomingBeforeThisFlow - targetOutgoing`.
 - `currentAmount`: current monthly amount of the visible flow being calculated.
+
+Initial formula rules:
+
+- `fixedAmount`
+- `percentOfTargetRemainingBeforeThisFlow`
+- `targetRemainingBeforeThisFlow`
+- `cappedAmount`
+- `min`
+- `max`
 
 Avoid:
 
@@ -125,4 +151,14 @@ Diagnostics should include relevant node IDs, flow IDs, and a concise message.
   container.
 
 - What small expression language is safest for POC work?
+
+  Current answer: do not start with a string expression language. Start with
+  typed formula rules such as fixed amount, percent of remaining, capped amount,
+  min, and max. This keeps evaluation explicit and avoids hidden parser
+  behavior while the product model is still stabilizing.
+
 - Should MathJS remain the parser, or should formula scope be smaller?
+
+  Current answer: do not use MathJS for the first executable formula loop.
+  Keep MathJS available as a dependency for later review, but start with the
+  smaller typed-rule evaluator.
