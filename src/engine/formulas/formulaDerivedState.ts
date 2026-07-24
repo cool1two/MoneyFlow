@@ -1,6 +1,8 @@
 import type { MoneyNodeTotals, MonthlyMoneyFlow } from "../graph/boardTotals";
 import type { DerivedBoardState, DerivedMoneyNode } from "../analysis/derivedBoardState";
+import type { BoardDiagnostic } from "../analysis/boardDiagnostics";
 import type { FormulaLayerEvaluation } from "./formulaEvaluation";
+import type { FormulaDiagnostic } from "./formulaLayer";
 import type { FlowFormulaResult, FlowFormulaSuccess } from "./formulaResult";
 
 export type FormulaDerivedState =
@@ -8,11 +10,13 @@ export type FormulaDerivedState =
       status: "ready";
       nodes: DerivedMoneyNode[];
       flows: MonthlyMoneyFlow[];
+      diagnostics: Array<BoardDiagnostic | FormulaDiagnostic>;
     }
   | {
       status: "blocked";
       nodes: [];
       flows: [];
+      diagnostics: Array<BoardDiagnostic | FormulaDiagnostic>;
     };
 
 export function applyFormulaResultsToDerivedState(
@@ -24,20 +28,21 @@ export function applyFormulaResultsToDerivedState(
       status: "blocked",
       nodes: [],
       flows: [],
+      diagnostics: evaluation.diagnostics,
     };
   }
 
   const formulaAmountsByFlowId = new Map(
     evaluation.results
       .filter(isSuccessfulFormulaResult)
-      .map((result) => [result.flowId, result.amount]),
+      .map((result) => [result.flowId, result.monthlyAmount]),
   );
   const flows = derived.flows.map((flow) => {
     const formulaAmount = formulaAmountsByFlowId.get(flow.id);
 
     return formulaAmount === undefined
       ? flow
-      : { ...flow, amount: formulaAmount, monthlyAmount: formulaAmount };
+      : { ...flow, monthlyAmount: formulaAmount };
   });
 
   return {
@@ -47,6 +52,7 @@ export function applyFormulaResultsToDerivedState(
       totals: getNodeTotalsFromMonthlyFlows(derived, flows, node.id),
     })),
     flows,
+    diagnostics: [...derived.diagnostics, ...evaluation.diagnostics],
   };
 }
 

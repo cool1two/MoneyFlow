@@ -40,6 +40,20 @@ export function createEmptyFormulaLayer(): FormulaLayer {
   };
 }
 
+export function removeMissingFlowFormulas(
+  board: BoardState,
+  formulaLayer: FormulaLayer,
+): FormulaLayer {
+  const flowIds = new Set(board.flows.map((flow) => flow.id));
+
+  return {
+    ...formulaLayer,
+    flowFormulas: formulaLayer.flowFormulas.filter((formula) =>
+      flowIds.has(formula.flowId),
+    ),
+  };
+}
+
 export function validateFormulaLayer(
   board: BoardState,
   formulaLayer: FormulaLayer,
@@ -132,13 +146,16 @@ function formatFormulaId(formulaId: string) {
 function isValidFlowFormulaRule(rule: FlowFormulaRule): boolean {
   switch (rule.type) {
     case "fixedAmount":
-      return isNonNegativeFinite(rule.amount);
+      return isNonNegativeFinite(rule.monthlyAmount);
     case "percentOfTargetRemainingBeforeThisFlow":
       return isNonNegativeFinite(rule.percent);
     case "targetRemainingBeforeThisFlow":
       return true;
     case "cappedAmount":
-      return isNonNegativeFinite(rule.amount) && isNonNegativeFinite(rule.max);
+      return (
+        isNonNegativeFinite(rule.monthlyAmount) &&
+        isNonNegativeFinite(rule.maxMonthlyAmount)
+      );
     case "min":
     case "max":
       return rule.rules.length > 0 && rule.rules.every(isValidFlowFormulaRule);

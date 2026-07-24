@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "board": {
+    "nodes": [
+      { "id": "income", "name": "Income", "position": { "x": 0, "y": 0 } }
+    ],
+    "flows": [],
+    "externalInflows": []
+  },
+  "formulas": {
+    "version": 1,
+    "flowFormulas": [
+      {
+        "id": "missing-flow-formula",
+        "flowId": "missing-flow",
+        "rule": { "type": "fixedAmount", "monthlyAmount": 100 }
+      }
+    ]
+  }
+}

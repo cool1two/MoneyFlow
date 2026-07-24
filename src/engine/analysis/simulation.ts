@@ -1,6 +1,7 @@
 import type { BoardDiagnostic } from "./boardDiagnostics";
 import type { DerivedBoardState } from "./derivedBoardState";
 import type { FormulaDerivedState } from "../formulas/formulaDerivedState";
+import type { FormulaDiagnostic } from "../formulas/formulaLayer";
 import type { NodeEvaluationContext } from "./nodeEvaluationContext";
 
 export type SimulationNodeSnapshot = {
@@ -15,12 +16,12 @@ export type SimulationResult =
   | {
       status: "ready";
       nodes: SimulationNodeSnapshot[];
-      diagnostics: BoardDiagnostic[];
+      diagnostics: Array<BoardDiagnostic | FormulaDiagnostic>;
     }
   | {
       status: "blocked";
       nodes: [];
-      diagnostics: BoardDiagnostic[];
+      diagnostics: Array<BoardDiagnostic | FormulaDiagnostic>;
     };
 
 export function simulateDerivedBoard(derived: DerivedBoardState): SimulationResult {
@@ -52,7 +53,7 @@ export function simulateFormulaDerivedState(
     return {
       status: "blocked",
       nodes: [],
-      diagnostics: [],
+      diagnostics: formulaDerived.diagnostics,
     };
   }
 
@@ -65,7 +66,7 @@ export function simulateFormulaDerivedState(
       outflow: node.totals.outflow,
       remaining: node.totals.externalInflow + node.totals.inflow - node.totals.outflow,
     })),
-    diagnostics: [],
+    diagnostics: formulaDerived.diagnostics,
   };
 }
 

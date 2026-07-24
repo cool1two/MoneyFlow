@@ -26,7 +26,7 @@ const formulaLayer: FormulaLayer = {
     {
       id: "formula-savings",
       flowId: "checking-savings",
-      rule: { type: "fixedAmount", amount: 800 },
+      rule: { type: "fixedAmount", monthlyAmount: 800 },
     },
   ],
 };
@@ -43,7 +43,7 @@ describe("formula derived state", () => {
     if (formulaDerived.status !== "ready") throw new Error("Expected ready formula state.");
 
     expect(formulaDerived.flows.find((flow) => flow.id === "checking-savings")).toMatchObject({
-      amount: 800,
+      amount: 500,
       monthlyAmount: 800,
     });
     expect(formulaDerived.nodes.find((node) => node.id === "checking")?.totals).toEqual({
@@ -77,6 +77,13 @@ describe("formula derived state", () => {
       status: "blocked",
       nodes: [],
       flows: [],
+      diagnostics: [
+        {
+          code: "formula.unknownFlow",
+          severity: "error",
+          message: "Formula formula-missing references an unknown flow.",
+        },
+      ],
     });
   });
 });

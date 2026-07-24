@@ -4,10 +4,11 @@ import { InspectorPanel } from "./components/inspector/InspectorPanel";
 import { AppToolbar } from "./components/toolbar/AppToolbar";
 import { useBoardStore } from "./store/boardStore";
 
-const versionLabel = "Milestone 6.0.0";
+const versionLabel = "Milestone 7";
 
 export default function App() {
   const board = useBoardStore((state) => state.board);
+  const formulas = useBoardStore((state) => state.formulaLayer);
   const draftFlowIds = useBoardStore((state) => state.draftFlowIds);
   const selectedFlowId = useBoardStore((state) => state.selectedFlowId);
   const selectedNodeId = useBoardStore((state) => state.selectedNodeId);
@@ -21,7 +22,7 @@ export default function App() {
   const moveNode = useBoardStore((state) => state.moveNode);
   const newBoard = useBoardStore((state) => state.newBoard);
   const renameNode = useBoardStore((state) => state.renameNode);
-  const replaceBoard = useBoardStore((state) => state.replaceBoard);
+  const replaceDocument = useBoardStore((state) => state.replaceDocument);
   const resetDemoBoard = useBoardStore((state) => state.resetDemoBoard);
   const selectFlow = useBoardStore((state) => state.selectFlow);
   const selectNode = useBoardStore((state) => state.selectNode);
@@ -32,6 +33,7 @@ export default function App() {
     <main className="canvas-shell">
       <AppToolbar
         board={board}
+        formulas={formulas}
         canDeleteNode={Boolean(selectedNodeId)}
         canDeleteTransfer={Boolean(selectedFlowId)}
         onAddNode={addNode}
@@ -39,7 +41,7 @@ export default function App() {
         onDeleteNode={deleteSelectedNode}
         onDeleteTransfer={deleteSelectedFlow}
         onNewBoard={newBoard}
-        onReplaceBoard={replaceBoard}
+        onReplaceDocument={replaceDocument}
         onResetDemo={resetDemoBoard}
         versionLabel={versionLabel}
       />

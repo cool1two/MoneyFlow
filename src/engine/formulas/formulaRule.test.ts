@@ -29,9 +29,9 @@ const createContext = (rule: Parameters<typeof getFlowFormulaContext>[1]["rule"]
 
 describe("formula rule evaluation", () => {
   it("evaluates fixed amount rules", () => {
-    expect(evaluateFlowFormulaRule(createContext({ type: "fixedAmount", amount: 125 }))).toMatchObject({
+    expect(evaluateFlowFormulaRule(createContext({ type: "fixedAmount", monthlyAmount: 125 }))).toMatchObject({
       status: "success",
-      amount: 125,
+      monthlyAmount: 125,
     });
   });
 
@@ -42,21 +42,25 @@ describe("formula rule evaluation", () => {
       ),
     ).toMatchObject({
       status: "success",
-      amount: 25,
+      monthlyAmount: 25,
     });
   });
 
   it("evaluates target remaining before this flow", () => {
     expect(evaluateFlowFormulaRule(createContext({ type: "targetRemainingBeforeThisFlow" }))).toMatchObject({
       status: "success",
-      amount: 100,
+      monthlyAmount: 100,
     });
   });
 
   it("evaluates capped amount rules", () => {
-    expect(evaluateFlowFormulaRule(createContext({ type: "cappedAmount", amount: 500, max: 120 }))).toMatchObject({
+    expect(evaluateFlowFormulaRule(createContext({
+      type: "cappedAmount",
+      monthlyAmount: 500,
+      maxMonthlyAmount: 120,
+    }))).toMatchObject({
       status: "success",
-      amount: 120,
+      monthlyAmount: 120,
     });
   });
 
@@ -66,28 +70,28 @@ describe("formula rule evaluation", () => {
         createContext({
           type: "min",
           rules: [
-            { type: "fixedAmount", amount: 80 },
+            { type: "fixedAmount", monthlyAmount: 80 },
             { type: "targetRemainingBeforeThisFlow" },
           ],
         }),
       ),
-    ).toMatchObject({ status: "success", amount: 80 });
+    ).toMatchObject({ status: "success", monthlyAmount: 80 });
 
     expect(
       evaluateFlowFormulaRule(
         createContext({
           type: "max",
           rules: [
-            { type: "fixedAmount", amount: 80 },
+            { type: "fixedAmount", monthlyAmount: 80 },
             { type: "targetRemainingBeforeThisFlow" },
           ],
         }),
       ),
-    ).toMatchObject({ status: "success", amount: 100 });
+    ).toMatchObject({ status: "success", monthlyAmount: 100 });
   });
 
   it("returns diagnostics for invalid rule results", () => {
-    expect(evaluateFlowFormulaRule(createContext({ type: "fixedAmount", amount: -1 }))).toMatchObject({
+    expect(evaluateFlowFormulaRule(createContext({ type: "fixedAmount", monthlyAmount: -1 }))).toMatchObject({
       status: "failure",
       diagnostics: [{ code: "formula.invalidResult" }],
     });

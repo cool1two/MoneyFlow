@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "board": {
+    "nodes": [
+      { "id": "income", "name": "Income", "position": { "x": 0, "y": 0 } },
+      { "id": "checking", "name": "Checking", "position": { "x": 300, "y": 0 } }
+    ],
+    "flows": [
+      {
+        "id": "income-checking",
+        "source": "income",
+        "target": "checking",
+        "amount": 1000,
+        "frequency": "monthly"
+      }
+    ],
+    "externalInflows": []
+  },
+  "formulas": {
+    "version": 1,
+    "flowFormulas": [
+      {
+        "id": "invalid-formula",
+        "flowId": "income-checking",
+        "rule": { "type": "unknownRule", "monthlyAmount": 100 }
+      }
+    ]
+  }
+}

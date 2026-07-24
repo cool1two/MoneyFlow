@@ -17,12 +17,21 @@ import {
   getConnectedFlowIdsForNode,
   hasFlow,
 } from "../engine/graph/boardSelectors";
-import { parseBoardState } from "../engine/graph/boardValidation";
+import { parseBoardState } from "../engine/persistence/documentSchema";
+import {
+  createEmptyFormulaLayer,
+  removeMissingFlowFormulas,
+  validateFormulaLayer,
+  type FormulaLayer,
+} from "../engine/formulas/formulaLayer";
+import { formulaLayerSchema } from "../engine/persistence/documentSchema";
+import type { MoneyFlowDocument } from "../engine/persistence/boardFile";
 import { mockBoard } from "../data/mockBoard";
 import type { BoardState, ExternalInflow, MoneyFlow } from "../models/board";
 
 type BoardStore = {
   board: BoardState;
+  formulaLayer: FormulaLayer;
   draftFlowIds: string[];
   selectedFlowId: string | null;
   selectedNodeId: string | null;
@@ -36,7 +45,7 @@ type BoardStore = {
   moveNode: (nodeId: string, position: { x: number; y: number }) => void;
   newBoard: () => void;
   renameNode: (nodeId: string, name: string) => void;
-  replaceBoard: (board: BoardState) => void;
+  replaceDocument: (document: MoneyFlowDocument) => void;
   resetDemoBoard: () => void;
   selectFlow: (flowId: string | null) => void;
   selectNode: (nodeId: string | null) => void;
@@ -46,12 +55,14 @@ type BoardStore = {
 
 type PersistedBoardStore = {
   board?: unknown;
+  formulaLayer?: unknown;
 };
 
 export const useBoardStore = create<BoardStore>()(
   persist(
     (set) => ({
       board: mockBoard,
+      formulaLayer: createEmptyFormulaLayer(),
       draftFlowIds: [],
       selectedFlowId: null,
       selectedNodeId: null,
@@ -73,6 +84,7 @@ export const useBoardStore = create<BoardStore>()(
       clearBoard: () =>
         set((state) => ({
           board: createEmptyBoard(),
+          formulaLayer: createEmptyFormulaLayer(),
           draftFlowIds: [],
           selectedFlowId: null,
           selectedNodeId: null,
@@ -96,9 +108,11 @@ export const useBoardStore = create<BoardStore>()(
       deleteSelectedFlow: () =>
         set((state) => {
           if (!state.selectedFlowId) return state;
+          const board = deleteFlow(state.board, state.selectedFlowId);
 
           return {
-            board: deleteFlow(state.board, state.selectedFlowId),
+            board,
+            formulaLayer: removeMissingFlowFormulas(board, state.formulaLayer),
             draftFlowIds: state.draftFlowIds.filter((id) => id !== state.selectedFlowId),
             selectedFlowId: null,
           };
@@ -110,9 +124,11 @@ export const useBoardStore = create<BoardStore>()(
           const connectedFlowIds = new Set(
             getConnectedFlowIdsForNode(state.board, state.selectedNodeId),
           );
+          const board = deleteNode(state.board, state.selectedNodeId);
 
           return {
-            board: deleteNode(state.board, state.selectedNodeId),
+            board,
+            formulaLayer: removeMissingFlowFormulas(board, state.formulaLayer),
             draftFlowIds: state.draftFlowIds.filter((id) =>
               !connectedFlowIds.has(id),
             ),
@@ -125,6 +141,7 @@ export const useBoardStore = create<BoardStore>()(
       newBoard: () =>
         set((state) => ({
           board: createEmptyBoard(),
+          formulaLayer: createEmptyFormulaLayer(),
           draftFlowIds: [],
           selectedFlowId: null,
           selectedNodeId: null,
@@ -132,9 +149,10 @@ export const useBoardStore = create<BoardStore>()(
         })),
       renameNode: (nodeId, name) =>
         set((state) => ({ board: renameNode(state.board, nodeId, name) })),
-      replaceBoard: (board) =>
+      replaceDocument: ({ board, formulas }) =>
         set((state) => ({
           board,
+          formulaLayer: formulas,
           draftFlowIds: [],
           selectedFlowId: null,
           selectedNodeId: null,
@@ -143,6 +161,7 @@ export const useBoardStore = create<BoardStore>()(
       resetDemoBoard: () =>
         set((state) => ({
           board: mockBoard,
+          formulaLayer: createEmptyFormulaLayer(),
           draftFlowIds: [],
           selectedFlowId: null,
           selectedNodeId: null,
@@ -158,6 +177,7 @@ export const useBoardStore = create<BoardStore>()(
 
           return {
             board,
+            formulaLayer: removeMissingFlowFormulas(board, state.formulaLayer),
             draftFlowIds:
               updates.amount > 0
                 ? filterExistingFlowIds(
@@ -173,14 +193,30 @@ export const useBoardStore = create<BoardStore>()(
     }),
     {
       name: "moneyflow-board",
-      partialize: (state) => ({ board: state.board }),
+      partialize: (state) => ({
+        board: state.board,
+        formulaLayer: state.formulaLayer,
+      }),
       merge: (persistedState, currentState) => {
-        const persistedBoard = (persistedState as PersistedBoardStore | null)?.board;
+        const persisted = persistedState as PersistedBoardStore | null;
 
         try {
+          const board = persisted?.board
+            ? parseBoardState(persisted.board)
+            : currentState.board;
+          const parsedFormulaLayer = formulaLayerSchema.safeParse(
+            persisted?.formulaLayer ?? createEmptyFormulaLayer(),
+          );
+          const formulaLayer = parsedFormulaLayer.success
+            ? parsedFormulaLayer.data
+            : createEmptyFormulaLayer();
+
+          if (!validateFormulaLayer(board, formulaLayer).valid) return currentState;
+
           return {
             ...currentState,
-            board: persistedBoard ? parseBoardState(persistedBoard) : currentState.board,
+            board,
+            formulaLayer,
           };
         } catch {
           return currentState;

@@ -42,6 +42,10 @@ The current POC includes:
 - Import validation and invalid JSON fixtures.
 - Engine tests for frequency, totals, selectors, validation, mutations, and
   import/export.
+- A typed, engine-only flow formula layer with derived-only monthly results.
+- Version 2 documents that persist both `BoardState` and `FormulaLayer`.
+- Zod parsing for untrusted version 1 and version 2 document structures.
+- Automatic version 1 migration with an empty formula layer.
 
 ## Development
 
@@ -129,20 +133,25 @@ selection, or draft editing state.
 
 ## Import/Export
 
-Exported files are versioned JSON:
+New exports use the version 2 document contract:
 
 ```ts
-type BoardFile = {
-  version: 1;
+type MoneyFlowDocument = {
+  version: 2;
   board: BoardState;
+  formulas: FormulaLayer;
 };
 ```
 
-Import validates structure, supported frequencies, node references, self-loops,
-duplicate IDs, negative values, and other BoardState rules before replacing the
-current board.
+Version 1 files remain importable and migrate to version 2 with an empty formula
+layer. Zod validates serialized structure and version-specific contracts.
+MoneyFlow's engine then validates graph and formula meaning, including node and
+flow references, self-loops, duplicate IDs, negative values, and duplicate
+formula targets.
 
 Invalid import fixtures live in `docs/import-fixtures/`.
+A valid formula-bearing version 2 example is in
+`docs/moneyflow-document-v2.json`.
 
 ## GitHub Pages
 
@@ -162,7 +171,7 @@ learning speed, not production hardening.
 Current intentional limits:
 
 - No backend or sync.
-- No formulas yet.
+- No formula-authoring UI yet.
 - No Sankey renderer yet.
 - No themes or visual polish pass yet.
 - localStorage persistence is suitable for POC work.
@@ -175,20 +184,23 @@ Next architecture direction:
 3. Expand tests where they accelerate refactoring confidence.
 4. Only add formulas after the engine boundary remains stable.
 
-## Milestone 7 Consideration: Zod
+## Milestone 7: Versioned Document Boundary
 
-Zod is a good candidate for runtime schema parsing at the import/export
-boundary. It could replace some hand-written structural checks in
-`parseBoardState` and `parseBoardFile`, while preserving TypeScript-friendly
-parsed output.
+Zod parses untrusted serialized data at the import/export boundary.
 
-Recommended scope:
+Its scope is:
 
-- Use Zod for untrusted JSON parsing.
-- Use Zod for BoardState file/schema version parsing.
-- Use Zod to support future schema migrations.
+- Untrusted JSON document shapes.
+- Version 1 and version 2 discrimination.
+- Board and formula-layer serialized structure.
+- A boundary for future schema migrations.
 - Keep graph meaning in the MoneyFlow engine.
 
 Do not use Zod as the graph engine. Zod can validate shape, but MoneyFlow must
 continue to own graph rules, diagnostics, cycle detection, evaluation ordering,
 financial meaning, formulas, and simulation.
+
+Formula results are normalized monthly values. Current formula rules evaluate
+independently against one baseline `DerivedBoardState`; results are applied
+together afterward. Sequential topological propagation is the preferred future
+direction and must be designed before formula UI is introduced.

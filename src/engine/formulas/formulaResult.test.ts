@@ -10,7 +10,7 @@ describe("formula result", () => {
       status: "success",
       formulaId: "formula-savings",
       flowId: "checking-savings",
-      amount: 250,
+      monthlyAmount: 250,
       diagnostics: [],
     });
   });
@@ -20,7 +20,7 @@ describe("formula result", () => {
       status: "failure",
       formulaId: "formula-savings",
       flowId: "checking-savings",
-      amount: null,
+      monthlyAmount: null,
       diagnostics: [
         {
           code: "formula.invalidResult",
@@ -54,7 +54,7 @@ describe("formula result", () => {
       status: "failure",
       formulaId: "formula-savings",
       flowId: "checking-savings",
-      amount: null,
+      monthlyAmount: null,
       diagnostics: [
         {
           code: "formula.invalidRule",

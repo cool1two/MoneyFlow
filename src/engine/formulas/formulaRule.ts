@@ -8,7 +8,7 @@ import {
 export type FlowFormulaRule =
   | {
       type: "fixedAmount";
-      amount: number;
+      monthlyAmount: number;
     }
   | {
       type: "percentOfTargetRemainingBeforeThisFlow";
@@ -19,8 +19,8 @@ export type FlowFormulaRule =
     }
   | {
       type: "cappedAmount";
-      amount: number;
-      max: number;
+      monthlyAmount: number;
+      maxMonthlyAmount: number;
     }
   | {
       type: "min";
@@ -34,9 +34,9 @@ export type FlowFormulaRule =
 export function evaluateFlowFormulaRule(
   context: FlowFormulaContext,
 ): FlowFormulaResult {
-  const amount = evaluateRuleAmount(context.formula.rule, context);
+  const monthlyAmount = evaluateRuleAmount(context.formula.rule, context);
 
-  if (amount === undefined) {
+  if (monthlyAmount === undefined) {
     return createFlowFormulaFailure(context.formula.id, context.formula.flowId, [
       {
         code: "formula.invalidRule",
@@ -48,7 +48,11 @@ export function evaluateFlowFormulaRule(
     ]);
   }
 
-  return createFlowFormulaSuccess(context.formula.id, context.formula.flowId, amount);
+  return createFlowFormulaSuccess(
+    context.formula.id,
+    context.formula.flowId,
+    monthlyAmount,
+  );
 }
 
 function evaluateRuleAmount(
@@ -57,13 +61,13 @@ function evaluateRuleAmount(
 ): number | undefined {
   switch (rule.type) {
     case "fixedAmount":
-      return rule.amount;
+      return rule.monthlyAmount;
     case "percentOfTargetRemainingBeforeThisFlow":
       return context.variables.targetRemainingBeforeThisFlow * rule.percent;
     case "targetRemainingBeforeThisFlow":
       return context.variables.targetRemainingBeforeThisFlow;
     case "cappedAmount":
-      return Math.min(rule.amount, rule.max);
+      return Math.min(rule.monthlyAmount, rule.maxMonthlyAmount);
     case "min": {
       const amounts = rule.rules.map((item) => evaluateRuleAmount(item, context));
       if (amounts.some((amount) => amount === undefined)) return undefined;

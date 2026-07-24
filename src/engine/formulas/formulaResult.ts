@@ -4,7 +4,7 @@ export type FlowFormulaSuccess = {
   status: "success";
   formulaId: string;
   flowId: string;
-  amount: number;
+  monthlyAmount: number;
   diagnostics: [];
 };
 
@@ -12,7 +12,7 @@ export type FlowFormulaFailure = {
   status: "failure";
   formulaId: string;
   flowId: string;
-  amount: null;
+  monthlyAmount: null;
   diagnostics: FormulaDiagnostic[];
 };
 
@@ -21,9 +21,9 @@ export type FlowFormulaResult = FlowFormulaSuccess | FlowFormulaFailure;
 export function createFlowFormulaSuccess(
   formulaId: string,
   flowId: string,
-  amount: number,
+  monthlyAmount: number,
 ): FlowFormulaResult {
-  if (!Number.isFinite(amount) || amount < 0) {
+  if (!Number.isFinite(monthlyAmount) || monthlyAmount < 0) {
     return createFlowFormulaFailure(formulaId, flowId, [
       {
         code: "formula.invalidResult",
@@ -39,7 +39,7 @@ export function createFlowFormulaSuccess(
     status: "success",
     formulaId,
     flowId,
-    amount,
+    monthlyAmount,
     diagnostics: [],
   };
 }
@@ -53,7 +53,7 @@ export function createFlowFormulaFailure(
     status: "failure",
     formulaId,
     flowId,
-    amount: null,
+    monthlyAmount: null,
     diagnostics,
   };
 }

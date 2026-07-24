@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { BoardState } from "../../models/board";
-import { parseBoardState, validateBoard } from "./boardValidation";
+import { parseBoardState } from "../persistence/documentSchema";
+import { validateBoard } from "./boardValidation";
 
 const validBoard: BoardState = {
   nodes: [

@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "board": {
+    "nodes": [
+      {
+        "id": "income",
+        "name": "Income",
+        "position": { "x": 0, "y": 0 }
+      },
+      {
+        "id": "checking",
+        "name": "Checking",
+        "position": { "x": 320, "y": 0 }
+      }
+    ],
+    "flows": [
+      {
+        "id": "income-checking",
+        "source": "income",
+        "target": "checking",
+        "amount": 2500,
+        "frequency": "monthly"
+      }
+    ],
+    "externalInflows": [
+      {
+        "id": "paycheck",
+        "target": "income",
+        "amount": 3000,
+        "frequency": "monthly"
+      }
+    ]
+  },
+  "formulas": {
+    "version": 1,
+    "flowFormulas": [
+      {
+        "id": "checking-transfer",
+        "flowId": "income-checking",
+        "rule": {
+          "type": "fixedAmount",
+          "monthlyAmount": 2500
+        }
+      }
+    ]
+  }
+}

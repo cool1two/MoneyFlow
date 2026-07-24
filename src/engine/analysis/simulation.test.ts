@@ -27,7 +27,7 @@ const formulaLayer: FormulaLayer = {
     {
       id: "formula-savings",
       flowId: "checking-savings",
-      rule: { type: "fixedAmount", amount: 800 },
+      rule: { type: "fixedAmount", monthlyAmount: 800 },
     },
   ],
 };
@@ -116,10 +116,25 @@ describe("simulation", () => {
   });
 
   it("blocks formula-adjusted simulation when formula projection is blocked", () => {
-    expect(simulateFormulaDerivedState({ status: "blocked", nodes: [], flows: [] })).toEqual({
+    const diagnostics = [
+      {
+        code: "formula.unknownFlow" as const,
+        severity: "error" as const,
+        message: "Formula formula-missing references an unknown flow.",
+      },
+    ];
+
+    expect(
+      simulateFormulaDerivedState({
+        status: "blocked",
+        nodes: [],
+        flows: [],
+        diagnostics,
+      }),
+    ).toEqual({
       status: "blocked",
       nodes: [],
-      diagnostics: [],
+      diagnostics,
     });
   });
 });

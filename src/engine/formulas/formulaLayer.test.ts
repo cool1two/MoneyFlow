@@ -3,6 +3,7 @@ import type { BoardState } from "../../models/board";
 import {
   createEmptyFormulaLayer,
   getFormulaLayerDiagnostics,
+  removeMissingFlowFormulas,
   validateFormulaLayer,
   type FormulaLayer,
 } from "./formulaLayer";
@@ -104,13 +105,36 @@ describe("formula layer", () => {
         {
           id: "formula-savings",
           flowId: "checking-savings",
-          rule: { type: "fixedAmount", amount: -1 },
+          rule: { type: "fixedAmount", monthlyAmount: -1 },
         },
       ],
     });
 
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("Formula formula-savings contains an invalid rule.");
+  });
+
+  it("removes formulas whose visible flows were deleted", () => {
+    const formulaLayer: FormulaLayer = {
+      version: 1,
+      flowFormulas: [
+        {
+          id: "formula-savings",
+          flowId: "checking-savings",
+          rule: { type: "fixedAmount", monthlyAmount: 100 },
+        },
+      ],
+    };
+
+    expect(
+      removeMissingFlowFormulas(
+        {
+          ...board,
+          flows: board.flows.filter((flow) => flow.id !== "checking-savings"),
+        },
+        formulaLayer,
+      ),
+    ).toEqual(createEmptyFormulaLayer());
   });
 
   it("returns structured diagnostics for blank formula ids and flow ids", () => {
@@ -121,7 +145,7 @@ describe("formula layer", () => {
           {
             id: " ",
             flowId: " ",
-            rule: { type: "fixedAmount", amount: 100 },
+            rule: { type: "fixedAmount", monthlyAmount: 100 },
           },
         ],
       }),

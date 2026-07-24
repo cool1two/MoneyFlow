@@ -68,6 +68,44 @@ Simulation can run against either plain `DerivedBoardState` or the
 formula-adjusted projection. Formula-adjusted simulation results remain
 derived-only and must not write back to `BoardState`.
 
+## Evaluation Semantics
+
+Milestone 7 explicitly preserves baseline-independent evaluation.
+
+All formula contexts are constructed from one baseline `DerivedBoardState`.
+Formula rules are evaluated against that same baseline, and successful monthly
+results are applied together afterward. A formula result does not change the
+context used by another formula in the same evaluation.
+
+For a chain such as:
+
+```txt
+Income -> Checking -> Savings
+```
+
+formulas on both flows see the original normalized monthly board values.
+Changing the formula result for `Income -> Checking` does not propagate into
+the context for `Checking -> Savings` during that evaluation.
+
+Sequential topological propagation is the preferred long-term behavior for
+financial simulation, but it is deferred until its flow-context semantics are
+designed and reviewed. It must be implemented before a UI suggests that
+upstream formula results automatically recalculate downstream formulas.
+
+## Formula Units
+
+Every successful formula result is a normalized monthly value and is named
+`monthlyAmount`.
+
+Applying a result replaces only the derived flow's `monthlyAmount`. It does not
+replace the canonical flow's original-frequency `amount` or `frequency`.
+Fixed and capped rules name their inputs `monthlyAmount` and
+`maxMonthlyAmount`; those fields remain user-authored configuration.
+
+Blocked formula-derived and simulation results retain their engine diagnostics.
+Consumers must display or pass through those diagnostics rather than
+reconstructing graph meaning.
+
 ## Formula Scope
 
 Early formula support should be local and constrained.

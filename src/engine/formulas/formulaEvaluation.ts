@@ -1,4 +1,5 @@
 import type { DerivedBoardState } from "../analysis/derivedBoardState";
+import type { BoardDiagnostic } from "../analysis/boardDiagnostics";
 import { getFlowFormulaContexts } from "./flowFormulaContext";
 import {
   getFormulaLayerDiagnostics,
@@ -12,12 +13,12 @@ export type FormulaLayerEvaluation =
   | {
       status: "ready";
       results: FlowFormulaResult[];
-      diagnostics: FormulaDiagnostic[];
+      diagnostics: Array<BoardDiagnostic | FormulaDiagnostic>;
     }
   | {
       status: "blocked";
       results: [];
-      diagnostics: FormulaDiagnostic[];
+      diagnostics: Array<BoardDiagnostic | FormulaDiagnostic>;
     };
 
 export function evaluateFormulaLayer(
@@ -39,6 +40,7 @@ export function evaluateFormulaLayer(
       status: "blocked",
       results: [],
       diagnostics: [
+        ...derived.diagnostics,
         {
           code: "formula.blockedByCycle",
           severity: "error",

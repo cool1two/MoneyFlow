@@ -1,10 +1,13 @@
 import { useRef } from "react";
 import { downloadBoardFile } from "../../browser/downloadBoardFile";
 import { parseBoardFile } from "../../engine/persistence/boardFile";
+import type { FormulaLayer } from "../../engine/formulas/formulaLayer";
+import type { MoneyFlowDocument } from "../../engine/persistence/boardFile";
 import type { BoardState } from "../../models/board";
 
 type AppToolbarProps = {
   board: BoardState;
+  formulas: FormulaLayer;
   canDeleteNode: boolean;
   canDeleteTransfer: boolean;
   onAddNode: () => void;
@@ -12,13 +15,14 @@ type AppToolbarProps = {
   onDeleteNode: () => void;
   onDeleteTransfer: () => void;
   onNewBoard: () => void;
-  onReplaceBoard: (board: BoardState) => void;
+  onReplaceDocument: (document: MoneyFlowDocument) => void;
   onResetDemo: () => void;
   versionLabel: string;
 };
 
 export function AppToolbar({
   board,
+  formulas,
   canDeleteNode,
   canDeleteTransfer,
   onAddNode,
@@ -26,7 +30,7 @@ export function AppToolbar({
   onDeleteNode,
   onDeleteTransfer,
   onNewBoard,
-  onReplaceBoard,
+  onReplaceDocument,
   onResetDemo,
   versionLabel,
 }: AppToolbarProps) {
@@ -37,7 +41,7 @@ export function AppToolbar({
     if (!file) return;
 
     try {
-      onReplaceBoard(parseBoardFile(await file.text()));
+      onReplaceDocument(parseBoardFile(await file.text()));
     } catch (error) {
       window.alert(error instanceof Error ? error.message : "Unable to import board.");
     } finally {
@@ -67,7 +71,7 @@ export function AppToolbar({
         <button
           className="toolbar-button subtle"
           type="button"
-          onClick={() => downloadBoardFile(board)}
+          onClick={() => downloadBoardFile(board, formulas)}
           disabled={!canExportBoard}
         >
           Export JSON
